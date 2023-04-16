@@ -133,7 +133,7 @@ function create() {
   createResetButton.call(this);
 
   gameState.sumText = this.add
-    .text(105, 460, "Sum: 0", { fontSize: "16px", fill: "#6bf2f2" })
+    .text(105, 460, "Sum: 0", { fontSize: "32px", fill: "#6bf2f2" })
     .setOrigin(0.5);
 }
 

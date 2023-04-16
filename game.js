@@ -1,7 +1,7 @@
 const config = {
   type: Phaser.AUTO,
   width: window.innerWidth,
-  height: window.innerHeight,
+  height: Math.min(window.innerHeight, 900),
   scene: {
     preload: preload,
     create: create,
@@ -113,11 +113,11 @@ function create() {
 
   gameState.cellWidth = Math.min(
     this.sys.game.config.width / (gridSize * 1.2),
-    50
+    100
   );
   gameState.cellHeight = Math.min(
     (this.sys.game.config.height * (2 / 3)) / (gridSize * 1.2),
-    50
+    100
   );
 
   gameState.gridX =
@@ -174,20 +174,36 @@ function createGrid(gridWidth, gridHeight) {
 function createButtons() {
   gameState.buttonCounters.forEach((counter, i) => {
     let button = this.add
-      .rectangle(100 + i * 100, 550, 50, 50, 0x9163bf)
+      .rectangle(
+        100 + i * 150,
+        this.sys.game.config.height - 100,
+        100,
+        100,
+        0x9163bf
+      )
       .setStrokeStyle(2, 0x9163bf);
 
     this.add
-      .text(100 + i * 100, 550, (i + 1).toString(), {
-        fontSize: "32px",
-        fill: "#6bf2f2",
-      })
+      .text(
+        100 + i * 150,
+        this.sys.game.config.height - 100,
+        (i + 1).toString(),
+        {
+          fontSize: "32px",
+          fill: "#6bf2f2",
+        }
+      )
       .setOrigin(0.5);
 
-    let buttonText = this.add.text(100 + i * 100, 500, counter.toString(), {
-      fontSize: "16px",
-      fill: "#6bf2f2",
-    });
+    let buttonText = this.add.text(
+      100 + i * 150,
+      this.sys.game.config.height - 200,
+      counter.toString(),
+      {
+        fontSize: "22px",
+        fill: "#6bf2f2",
+      }
+    );
     gameState.buttonTexts.push(buttonText);
     button.setInteractive();
 

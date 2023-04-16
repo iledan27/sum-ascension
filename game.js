@@ -5,13 +5,13 @@ const config = {
   scene: {
     preload: preload,
     create: create,
-    update: update
-  }
+    update: update,
+  },
 };
 
 const level1 = {
   buttonCounters: [4, 3, 1],
-  values: [[2], [3], [2], [2], [2], [1], [0]]
+  values: [[2], [3], [2], [2], [2], [1], [0]],
 };
 
 const level2 = {
@@ -21,8 +21,8 @@ const level2 = {
     [1, 2, 1, 3, 2],
     [2, 2, 2, 1, 3],
     [3, 1, 3, 2, 2],
-    [0, 2, 3, 1, 1]
-  ]
+    [0, 2, 3, 1, 1],
+  ],
 };
 
 const level7 = {
@@ -33,8 +33,8 @@ const level7 = {
     [1, 6, 6, 2, 2, 2],
     [2, 2, 4, 4, 4, 4],
     [6, 5, 1, 1, 6, 5],
-    [0, 4, 5, 6, 5, 4]
-  ]
+    [0, 4, 5, 6, 5, 4],
+  ],
 };
 
 const level9 = {
@@ -44,8 +44,8 @@ const level9 = {
     [2, 1, 2, 2, 2],
     [1, 2, 1, 1, 1],
     [3, 3, 3, 3, 3],
-    [0, 1, 2, 1, 2]
-  ]
+    [0, 1, 2, 1, 2],
+  ],
 };
 
 function generateLevel(
@@ -57,7 +57,7 @@ function generateLevel(
 ) {
   const level = {
     buttonCounters: buttonCounters,
-    values: []
+    values: [],
   };
 
   for (let y = 0; y < gridHeight; y++) {
@@ -79,7 +79,7 @@ function generateLevel(
 const level = level7;
 
 const gameState = {
-  buttonCounters: level.buttonCounters,
+  buttonCounters: [...level.buttonCounters],
   playerIndex: { x: 0, y: level.values.length - 1 },
   values: level.values,
   cells: [],
@@ -94,31 +94,35 @@ const gameState = {
   buttonTexts: [],
   moveButtonCounters: null,
   gridWidth: level.values[0]?.length,
-  gridHeight: level.values.length
+  gridHeight: level.values.length,
 };
 
 var game = new Phaser.Game(config);
 
 function preload() {
   this.load.bitmapFont(
-    'desyrel',
-    'https://labs.phaser.io/assets/fonts/bitmap/desyrel.png',
-    'https://labs.phaser.io/assets/fonts/bitmap/desyrel.xml'
+    "desyrel",
+    "https://labs.phaser.io/assets/fonts/bitmap/desyrel.png",
+    "https://labs.phaser.io/assets/fonts/bitmap/desyrel.xml"
   );
-  this.load.image('reset-icon', 'undo-arrow.png');
+  this.load.image("reset-icon", "undo-arrow.png");
 }
 
 function create() {
   const gridSize = Math.max(gameState.gridWidth, gameState.gridHeight);
 
-  gameState.cellWidth = Math.min(this.sys.game.config.width / (gridSize * 1.2), 50);
+  gameState.cellWidth = Math.min(
+    this.sys.game.config.width / (gridSize * 1.2),
+    50
+  );
   gameState.cellHeight = Math.min(
     (this.sys.game.config.height * (2 / 3)) / (gridSize * 1.2),
     50
   );
 
   gameState.gridX =
-    (this.sys.game.config.width - gameState.gridWidth * gameState.cellWidth) / 2;
+    (this.sys.game.config.width - gameState.gridWidth * gameState.cellWidth) /
+    2;
   gameState.gridY =
     (this.sys.game.config.height * (2 / 3) -
       gameState.gridHeight * gameState.cellHeight) /
@@ -129,7 +133,7 @@ function create() {
   createResetButton.call(this);
 
   gameState.sumText = this.add
-    .text(105, 460, 'Sum: 0', { fontSize: '16px', fill: '#6bf2f2' })
+    .text(105, 460, "Sum: 0", { fontSize: "16px", fill: "#6bf2f2" })
     .setOrigin(0.5);
 }
 
@@ -148,14 +152,14 @@ function createGrid(gridWidth, gridHeight) {
         .setStrokeStyle(2, 0x6bf2f2)
         .setInteractive();
 
-      cell.on('pointerdown', () => onSelectCell.call(this, x, y));
+      cell.on("pointerdown", () => onSelectCell.call(this, x, y));
       gameState.cells[y][x] = cell;
 
       this.add
         .bitmapText(
           gameState.gridX + x * gameState.cellWidth + gameState.cellWidth / 2,
           gameState.gridY + y * gameState.cellHeight + gameState.cellHeight / 2,
-          'desyrel',
+          "desyrel",
           gameState.values[y][x].toString(),
           32
         )
@@ -175,19 +179,19 @@ function createButtons() {
 
     this.add
       .text(100 + i * 100, 550, (i + 1).toString(), {
-        fontSize: '32px',
-        fill: '#6bf2f2'
+        fontSize: "32px",
+        fill: "#6bf2f2",
       })
       .setOrigin(0.5);
 
     let buttonText = this.add.text(100 + i * 100, 500, counter.toString(), {
-      fontSize: '16px',
-      fill: '#6bf2f2'
+      fontSize: "16px",
+      fill: "#6bf2f2",
     });
     gameState.buttonTexts.push(buttonText);
     button.setInteractive();
 
-    button.on('pointerdown', () => onButtonClick.call(this, i, buttonText));
+    button.on("pointerdown", () => onButtonClick.call(this, i, buttonText));
   });
 }
 
@@ -217,10 +221,10 @@ function onSelectCell(x, y) {
       targets: gameState.selectCellBorder,
       scaleX: 1.1,
       scaleY: 1.1,
-      ease: 'Sine.easeInOut',
+      ease: "Sine.easeInOut",
       duration: 500,
       yoyo: true,
-      repeat: -1
+      repeat: -1,
     });
   }
 }
@@ -238,21 +242,25 @@ function onButtonClick(i, buttonText) {
       gameState.buttonCounters[i]--;
       buttonText.setText(gameState.buttonCounters[i].toString());
 
-      if (sum === gameState.values[gameState.selectedCell.y][gameState.selectedCell.x]) {
-        gameState.cells[gameState.playerIndex.y][gameState.playerIndex.x].setFillStyle(
-          0x9be2f2
-        );
+      if (
+        sum ===
+        gameState.values[gameState.selectedCell.y][gameState.selectedCell.x]
+      ) {
+        gameState.cells[gameState.playerIndex.y][
+          gameState.playerIndex.x
+        ].setFillStyle(0x9be2f2);
         movePlayer.call(this);
         gameState.selectedNumbers = [];
-        gameState.sumText.setText('Sum: 0');
+        gameState.sumText.setText("Sum: 0");
       } else if (
-        sum > gameState.values[gameState.selectedCell.y][gameState.selectedCell.x]
+        sum >
+        gameState.values[gameState.selectedCell.y][gameState.selectedCell.x]
       ) {
         this.cameras.main.setBackgroundColor(0xffa07a);
         var errorMessage = this.add
-          .text(400, 30, 'Error: Sum exceeded!', {
-            fontSize: '32px',
-            fill: '#ff0000'
+          .text(400, 30, "Error: Sum exceeded!", {
+            fontSize: "32px",
+            fill: "#ff0000",
           })
           .setOrigin(0.5);
 
@@ -261,7 +269,7 @@ function onButtonClick(i, buttonText) {
           function () {
             gameState.selectedNumbers = [];
             sum = 0;
-            gameState.sumText.setText('Sum: ' + sum);
+            gameState.sumText.setText("Sum: " + sum);
             gameState.buttonCounters = [...gameState.moveButtonCounters];
             updateButtonText();
             this.cameras.main.setBackgroundColor(0x000000);
@@ -271,7 +279,7 @@ function onButtonClick(i, buttonText) {
           this
         );
       } else {
-        gameState.sumText.setText('Sum: ' + sum);
+        gameState.sumText.setText("Sum: " + sum);
       }
     }
   } else {
@@ -282,9 +290,9 @@ function onButtonClick(i, buttonText) {
 function movePlayer() {
   gameState.playerIndex = { ...gameState.selectedCell };
 
-  gameState.cells[gameState.selectedCell.y][gameState.selectedCell.x].setFillStyle(
-    0x9163bf
-  );
+  gameState.cells[gameState.selectedCell.y][
+    gameState.selectedCell.x
+  ].setFillStyle(0x9163bf);
 
   gameState.selectedCell = null;
   gameState.selectCellBorder.destroy();
@@ -293,7 +301,7 @@ function movePlayer() {
     gameState.playerIndex.y === 0 &&
     gameState.playerIndex.x === gameState.gridWidth - 1
   ) {
-    alert('You win!');
+    alert("You win!");
   }
 }
 
@@ -313,7 +321,7 @@ function resetGame() {
   createGrid.call(this, gameState.gridWidth, gameState.gridHeight);
 
   gameState.selectedNumbers = [];
-  gameState.sumText.setText('Sum: 0');
+  gameState.sumText.setText("Sum: 0");
 }
 
 function createResetButton() {
@@ -322,12 +330,12 @@ function createResetButton() {
     .setInteractive();
 
   this.add
-    .image(this.sys.game.config.width - 50, 30, 'reset-icon')
+    .image(this.sys.game.config.width - 50, 30, "reset-icon")
     .setOrigin(0.5)
     .setDisplaySize(5, 5)
     .setScale(0.5); // Adjust the scale according to the size of your icon
 
-  resetButton.on('pointerdown', () => {
+  resetButton.on("pointerdown", () => {
     resetGame.call(this);
   });
 }

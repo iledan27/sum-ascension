@@ -30,6 +30,7 @@ class Scene extends Phaser.Scene {
     selectedNumbers: [],
     sumText: null,
     buttonTexts: [],
+    buttons: [],
     moveButtonCounters: null,
     gridWidth: this.levels[this.currentLevelIndex].values[0]?.length,
     gridHeight: this.levels[this.currentLevelIndex].values.length,
@@ -44,6 +45,7 @@ class Scene extends Phaser.Scene {
     );
     this.load.image("reset-icon", "undo-arrow.png");
     this.load.json("levels", "levels.json");
+    this.load.image("help-icon", "help-icon.png");
   }
 
   create() {
@@ -92,6 +94,11 @@ class Scene extends Phaser.Scene {
         fill: "#ffffff",
       }
     );
+
+    this.helpButton = this.add
+      .image(this.sys.game.config.width - 50, 32, "help-icon")
+      .setInteractive();
+    this.helpButton.on("pointerdown", () => this.showHelp());
   }
 
   createGrid = (gridWidth, gridHeight) => {
@@ -171,8 +178,8 @@ class Scene extends Phaser.Scene {
       );
       this.gameState.buttonTexts.push(buttonText);
       button.setInteractive();
-
       button.on("pointerdown", () => this.onButtonClick(i, buttonText));
+      this.gameState.buttons.push(button);
     });
   };
 
@@ -253,7 +260,6 @@ class Scene extends Phaser.Scene {
           this.gameState.buttonCounters = [
             ...this.gameState.moveButtonCounters,
           ];
-          this.updateButtonText();
           const warningContainer = this.createWarningContainer();
 
           this.time.delayedCall(
@@ -267,9 +273,9 @@ class Scene extends Phaser.Scene {
         } else {
           this.gameState.sumText.setText("Sum: " + sum);
         }
+
+        this.updateButtonText();
       }
-    } else {
-      alert(`Button ${i + 1} is out of clicks!`);
     }
   };
 
@@ -295,9 +301,16 @@ class Scene extends Phaser.Scene {
 
   updateButtonText = () => {
     for (let i = 0; i < this.gameState.buttonCounters.length; i++) {
-      this.gameState.buttonTexts[i].setText(
-        this.gameState.buttonCounters[i].toString()
-      );
+      const counter = this.gameState.buttonCounters[i].toString();
+      this.gameState.buttonTexts[i].setText(counter);
+
+      if (counter <= 0) {
+        this.gameState.buttons[i].setFillStyle(0x999999); // Gray out the button
+        this.gameState.buttons[i].removeInteractive(); // Make the button unclickable
+      } else {
+        this.gameState.buttons[i].setFillStyle(0x9163bf); // Reset the button color
+        this.gameState.buttons[i].setInteractive(); // Make the button clickable
+      }
     }
   };
 
@@ -308,11 +321,11 @@ class Scene extends Phaser.Scene {
 
   createResetButton = () => {
     const resetButton = this.add
-      .rectangle(this.sys.game.config.width - 50, 30, 36, 36, 0xffffff)
+      .rectangle(this.sys.game.config.width - 50, 82, 36, 36, 0xffffff)
       .setInteractive();
 
     this.add
-      .image(this.sys.game.config.width - 50, 30, "reset-icon")
+      .image(this.sys.game.config.width - 50, 82, "reset-icon")
       .setOrigin(0.5)
       .setDisplaySize(5, 5)
       .setScale(0.5); // Adjust the scale according to the size of your icon
@@ -333,6 +346,7 @@ class Scene extends Phaser.Scene {
     this.gameState.selectCellBorder = null;
     this.gameState.selectedCell = null;
     this.gameState.buttonTexts = [];
+    this.gameState.buttons = [];
     this.gameState.levelTitleText = `Level: 0${this.gameState.currentLevelIndex}`;
   };
 
@@ -447,6 +461,44 @@ class Scene extends Phaser.Scene {
     this.gameState.currentLevelIndex = newIndex;
     localStorage.setItem("currentLevelIndex", newIndex);
   };
+
+  showHelp() {
+    const helpText = `
+    - Start at the bottom left corner.
+    - Select adjacent cells to move.
+    - Click 1, 2, or 3 to add to the sum.
+    - Match the sum to the cell's value to move to that cell.
+    - Reach the top right cell to win.
+    - If button counter reaches 0 the button will be disabled.
+    `;
+
+    const style = {
+      fontFamily: "Arial",
+      fontSize: 24,
+      color: "#ffffff",
+      backgroundColor: "rgba(0, 0, 0, 0.6)",
+      padding: { x: 20, y: 10 },
+      align: "left",
+    };
+
+    const helpBox = this.add.text(50, 50, helpText, style);
+    helpBox.setScrollFactor(0);
+    helpBox.setDepth(1000);
+
+    const closeButton = this.add
+      .text(this.sys.game.config.width - 200, 50 + helpBox.height, "Close", {
+        ...style,
+        backgroundColor: "#ff0000",
+      })
+      .setInteractive();
+    closeButton.setScrollFactor(0);
+    closeButton.setDepth(1000);
+
+    closeButton.on("pointerdown", () => {
+      helpBox.destroy();
+      closeButton.destroy();
+    });
+  }
 
   update() {}
 }
